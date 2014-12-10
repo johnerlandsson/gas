@@ -1,11 +1,8 @@
 ; empty the library path and populate it with local paths
 (reset-component-library)
 
-; set default titleblock
-(define default-titleblock "luna-title-A4.sym")
-
 ; set library paths
-(define gedasymbols "/home/john/Dropbox/Luna/gschem/symbols")
+(define gedasymbols "${HOME}/.gEDA/gas/symbols")
 (component-library (build-path gedasymbols "titleblocks"))
 (component-library (build-path gedasymbols "xref"))
 (component-library (build-path gedasymbols "sek_manual_switches"))
@@ -17,3 +14,7 @@
 (component-library (build-path gedasymbols "electronics"))
 (component-library (build-path gedasymbols "sek_power_supply"))
 (component-library (build-path gedasymbols "counters"))
+
+; set default titleblock
+(define default-titleblock "luna-title-A4.sym")
+
