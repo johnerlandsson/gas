@@ -1,0 +1,13 @@
+#!/bin/bash
+
+
+for f in *.sch
+do
+	gschem -o $f".ps" -s /usr/share/gEDA/scheme/print.scm $f
+	ps2pdf $f".ps"
+done
+
+pdfmerge *.pdf schematic.pdf.tmp
+rm *.ps
+rm *.pdf
+mv schematic.pdf.tmp schematic.pdf
