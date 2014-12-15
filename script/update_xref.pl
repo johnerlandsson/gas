@@ -14,6 +14,9 @@ $Parse::GEDA::Gschem::ERRORFILENAME = 'error.log';
 # ========================================================================================================
 sub map_titleblock
 {
+	die "Too many arguments to map_titleblock" unless @_ <= 2;
+	die "Too few arguments to map_titleblock" unless @_ >= 2;
+
 	my $x = $_[0];
 	my $y = $_[1];
 	my $ret_x = "";
@@ -45,7 +48,7 @@ sub map_titleblock
 	}
 	else
 	{
-		$ret_x = 'invalid_x';
+		die "map_titleblock: invalid X coordinate";
 	}
 
 
@@ -71,7 +74,7 @@ sub map_titleblock
 	}
 	else
 	{
-		$ret_y = 'invalid_y';
+		die "map_titleblock: invalid Y coordinate";
 	}
 
 	return $ret_y . $ret_x;
@@ -89,6 +92,9 @@ our @files = @{Parse::GEDA::Gschem::readSchFiles( \@schFiles )};
 # ========================================================================================================
 sub update_xref
 {
+	die "Too many arguments to update_xref" unless @_ <= 5;
+	die "Too few arguments to update_xref" unless @_ >= 5;
+
 	for( my $file_idx = 0; $file_idx < @files; $file_idx++ )
 	{
 		for( my $object_idx = 0; $object_idx < @{$files[$file_idx]->{objects}}; $object_idx++ )
@@ -99,6 +105,7 @@ sub update_xref
 			my $xref_idx = -1;
 			my $xref_value = $_[0] + 1 . '-' . map_titleblock( $_[3], $_[4] );
 
+			# iterate attributes
 			for( my $attr_idx = 0; $attr_idx < @{$files[$file_idx]->{objects}->[$object_idx]->{Attributes}}; $attr_idx++ )
 			{
 				given( $files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{name} )
@@ -177,7 +184,7 @@ for( my $file_idx = 0; $file_idx < @files; $file_idx++ )
 				}
 			}
 		}
-		
+
 		# update xref if component has xref_master attribute
 		if( $xref_master eq '1' and $refdes ne '' )
 		{
