@@ -3,17 +3,17 @@
 
 ; set library paths
 (define gedasymbols "${HOME}/.gEDA/gas/symbols")
-(component-library (build-path gedasymbols "titleblocks"))
-(component-library (build-path gedasymbols "xref"))
-(component-library (build-path gedasymbols "sek_manual_switches"))
+(component-library (build-path gedasymbols "connectors"))
+(component-library (build-path gedasymbols "counters"))
+(component-library (build-path gedasymbols "electronics"))
+(component-library (build-path gedasymbols "motor_drives"))
 (component-library (build-path gedasymbols "sek_electromechanical"))
 (component-library (build-path gedasymbols "sek_fuses"))
 (component-library (build-path gedasymbols "sek_inductors"))
-(component-library (build-path gedasymbols "motor_drives"))
-(component-library (build-path gedasymbols "connectors"))
-(component-library (build-path gedasymbols "electronics"))
+(component-library (build-path gedasymbols "sek_manual_switches"))
 (component-library (build-path gedasymbols "sek_power_supply"))
-(component-library (build-path gedasymbols "counters"))
+(component-library (build-path gedasymbols "titleblocks"))
+(component-library (build-path gedasymbols "xref"))
 
 ; set default titleblock
 (define default-titleblock "luna-title-A4.sym")
