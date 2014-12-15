@@ -22,6 +22,7 @@ sub map_titleblock
 	my $ret_x = "";
 	my $ret_y = "";
 
+	# map X coordinate to number
 	if( $x ge 40200 and $x le 42000 )
 	{
 		$ret_x = '1';
@@ -52,6 +53,7 @@ sub map_titleblock
 	}
 
 
+	# map Y coordinate to number
 	if( $y ge 40200 and $y le 42000 )
 	{
 		$ret_y = 'A';
@@ -95,8 +97,10 @@ sub update_xref
 	die "Too many arguments to update_xref" unless @_ <= 5;
 	die "Too few arguments to update_xref" unless @_ >= 5;
 
+	# iterate files
 	for( my $file_idx = 0; $file_idx < @files; $file_idx++ )
 	{
+		# iterate objects
 		for( my $object_idx = 0; $object_idx < @{$files[$file_idx]->{objects}}; $object_idx++ )
 		{
 			next if( !($files[$file_idx]->{objects}->[$object_idx]->{type} eq 'C') );
@@ -136,7 +140,23 @@ sub update_xref
 					#Otherwise create new xref attribute
 					else
 					{
-						print "Found symbol without xref attribute";
+						my %new_attr = (
+								alignment => '0',
+								show_name_value => '1',
+								value => $xref_value,
+								angle => '0',
+								x => $files[$file_idx]->{objects}->[$object_idx]->{x},
+								size => '6',
+								y => $files[$file_idx]->{objects}->[$object_idx]->{y},
+								color => '5',
+								name => 'xref',
+								type => 'T',
+								num_lines => '1',
+								visibility => '1'
+							       );
+
+						print "Adding new xref attribute to " . $refdes_value . " on page " . ($file_idx + 1) . "\n";
+						push( @files[$file_idx]->{objects}->[$object_idx]->{Attributes}, \%new_attr );
 					}
 				}
 			}
