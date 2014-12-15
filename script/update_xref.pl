@@ -156,7 +156,7 @@ sub update_xref
 							       );
 
 						print "Adding new xref attribute to " . $refdes_value . " on page " . ($file_idx + 1) . "\n";
-						push( @files[$file_idx]->{objects}->[$object_idx]->{Attributes}, \%new_attr );
+						push( $files[$file_idx]->{objects}->[$object_idx]->{Attributes}, \%new_attr );
 					}
 				}
 			}
@@ -169,6 +169,9 @@ sub update_xref
 # main program
 # ========================================================================================================
 
+# back up schematic files
+print "Creating backup...\n";
+Parse::GEDA::Gschem::bakSchFiles( \@schFiles );
 
 # iterate files
 for( my $file_idx = 0; $file_idx < @files; $file_idx++ )
