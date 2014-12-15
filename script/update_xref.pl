@@ -121,10 +121,12 @@ sub update_xref
 			{
 				if( $refdes_value eq $_[2] )
 				{
+					#Update existing xref attribute if exsists
 					if( $xref_idx ge 0 )
 					{
 						$files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$xref_idx]->{value} = $xref_value;
 					}
+					#Otherwise create new xref attribute
 					else
 					{
 						print "Found symbol without xref attribute";
