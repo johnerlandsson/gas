@@ -5,7 +5,7 @@ use 5.18.4;
 use Parse::GEDA::Gschem;
 use Data::Dumper;
 
-$Parse::GEDA::Gschem::ERRORFILENAME = 'test.log';
+$Parse::GEDA::Gschem::ERRORFILENAME = 'error.log';
 
 no warnings 'experimental::smartmatch';
 
