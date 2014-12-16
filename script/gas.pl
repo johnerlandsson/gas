@@ -9,9 +9,24 @@ no warnings 'experimental::smartmatch';
 $Parse::GEDA::Gschem::ERRORFILENAME = 'error.log';
 
 # ========================================================================================================
-# chk_args
-# Handle command line arguments
+# usage
 # ========================================================================================================
+# Print usage information
+sub usage
+{
+	print "Usage $0 [-htx]";
+	print "\n";
+	print "-b -bck\t\tCreate backup before performing actions.\n";
+	print "-h -help\t\tDisplay this help.\n";
+	print "-x -xref\t\tUpdate crossreferences on all schematics in folder.\n";
+	print "-t -title [TITLE]\tSets the title attribute on titleblocks.\n";
+	print "-p -pages\t\tUpdates the page number part of titleblocks.\n";
+}
+
+# ========================================================================================================
+# chk_args
+# ========================================================================================================
+# Handle command line arguments
 sub chk_args
 {
 	our @ARGV;
@@ -42,8 +57,13 @@ sub chk_args
 		{
 			$do_pages = 1;
 		}
+		elsif( $ARGV[$arg_idx] =~ /^-h(elp)?$/ )
+		{
+			usage();
+		}
 		else
 		{
+			usage();
 			die "Unknown argument: " . $ARGV[$arg_idx];
 		}
 	}
@@ -51,9 +71,9 @@ sub chk_args
 
 # ========================================================================================================
 # map_titleblock
+# ========================================================================================================
 # map XY cordinates to titleblock
 # used by update_xref
-# ========================================================================================================
 sub map_titleblock
 {
 	die "Too many arguments to map_titleblock" unless @_ <= 2;
@@ -126,8 +146,8 @@ sub map_titleblock
 
 # ========================================================================================================
 # update_xref
-# iterate all objects in all files and update xref attribute of components with matching refdes
 # ========================================================================================================
+# iterate all objects in all files and update xref attribute of components with matching refdes
 sub hlp_update_xref
 {
 	die "Too many arguments to update_xref" unless @_ <= 5;
@@ -205,6 +225,9 @@ sub hlp_update_xref
 # ========================================================================================================
 # update_xref
 # ========================================================================================================
+# This subroutine locates symbols with the attribute xref_master=1
+# Then locates all symbols with the same refdes and updates the xref attribute with the position of
+# master object
 sub update_xref
 {
 	our @files;
@@ -265,6 +288,8 @@ sub update_xref
 # ========================================================================================================
 # update_title
 # ========================================================================================================
+# Locates the titleblock and updates the title attribute to the name given with
+# command line argument
 sub update_title
 {
 	our $titleblock_title;
@@ -301,6 +326,8 @@ sub update_title
 # ========================================================================================================
 # update_pages
 # ========================================================================================================
+# Locates the titleblock and updates the page and n_pages attributes to the corresponding
+# page number and number of pages.
 sub update_pages
 {
 	our @files;
@@ -381,4 +408,5 @@ if( $do_xref or $do_title or $do_pages )
 	# Write changes to sch files
 	Parse::GEDA::Gschem::writeSchFiles( \@files );
 }
+
 print "Done...\n";
