@@ -1,3 +1,17 @@
 gas - gEDA Automation Schematic
 
 Scripts, rcfile and symbols for drawing automation schematics in gschem.
+
+sch21pdf - Merges all .sch files in current folders into one pdf - file called schematic.pdf
+
+gas.pl - Page numbering, updating title field of titleblock and updating crossreferences in schematics
+
+Installation:
+
+	* clone the repo: git clone https://github.com/johnerlandsson/gas.git /home/user/.gEDA/gas
+
+	[optional]
+	* create symbolic link to rcfile: ln -s /home/user/.gEDA/gas/rcfile/gschemrc /home/user/
+	* add the scripts to your path variable: echo "export PATH=$PATH:/home/user/.gEDA/gas/script" >> /home/user/.bashrc
+
+

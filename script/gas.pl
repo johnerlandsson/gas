@@ -21,6 +21,7 @@ sub usage
 	print "-x -xref\t\tUpdate crossreferences on all schematics in folder.\n";
 	print "-t -title [TITLE]\tSets the title attribute on titleblocks.\n";
 	print "-p -pages\t\tUpdates the page number part of titleblocks.\n";
+	print "\n";
 }
 
 # ========================================================================================================
@@ -36,6 +37,7 @@ sub chk_args
 	our $titleblock_title;
 	our $do_pages;
 
+	# iterate arguments
 	for( my $arg_idx = 0; $arg_idx < @ARGV; $arg_idx++ )
 	{
 		if( $ARGV[$arg_idx] =~ /^-x(ref)?$/ )
@@ -74,6 +76,9 @@ sub chk_args
 # ========================================================================================================
 # map XY cordinates to titleblock
 # used by update_xref
+#
+# TODO Work with other titleblocks
+#
 sub map_titleblock
 {
 	die "Too many arguments to map_titleblock" unless @_ <= 2;
@@ -145,13 +150,22 @@ sub map_titleblock
 }
 
 # ========================================================================================================
-# update_xref
+# hlp_update_xref
 # ========================================================================================================
-# iterate all objects in all files and update xref attribute of components with matching refdes
+# Helper function for update_xref
+# Reiterates all files and components looking for the refdes that was found by update_xref
+# then updates or adds the xref attribute with coordinates mapped to the titleblock
+#
 sub hlp_update_xref
 {
 	die "Too many arguments to update_xref" unless @_ <= 5;
 	die "Too few arguments to update_xref" unless @_ >= 5;
+
+	my $b_file_idx = $_[0];
+	my $b_object_idx = $_[1];
+	my $b_refdes = $_[2];
+	my $b_x = $_[3];
+	my $b_y = $_[4];
 
 	our @files;
 
@@ -165,7 +179,7 @@ sub hlp_update_xref
 			my $refdes_idx = -1;
 			my $refdes_value = "";
 			my $xref_idx = -1;
-			my $xref_value = $_[0] + 1 . '-' . map_titleblock( $_[3], $_[4] );
+			my $xref_value = $_[0] + 1 . '-' . map_titleblock( $b_x, $b_y );
 
 			# iterate attributes
 			for( my $attr_idx = 0; $attr_idx < @{$files[$file_idx]->{objects}->[$object_idx]->{Attributes}}; $attr_idx++ )
@@ -186,9 +200,9 @@ sub hlp_update_xref
 			}
 
 			# found matching refdes in different component
-			if( $refdes_idx ge 0 and !($_[0] eq $file_idx and $_[1] eq $object_idx) )
+			if( $refdes_idx ge 0 and !($b_file_idx eq $file_idx and $b_object_idx eq $object_idx) )
 			{
-				if( $refdes_value eq $_[2] )
+				if( $refdes_value eq $b_refdes )
 				{
 					#Update existing xref attribute if exsists
 					if( $xref_idx ge 0 )
@@ -198,6 +212,7 @@ sub hlp_update_xref
 					#Otherwise create new xref attribute
 					else
 					{
+						# place the xref attribute on components origin
 						my %new_attr = (
 								alignment => '0',
 								show_name_value => '1',
@@ -228,6 +243,7 @@ sub hlp_update_xref
 # This subroutine locates symbols with the attribute xref_master=1
 # Then locates all symbols with the same refdes and updates the xref attribute with the position of
 # master object
+#
 sub update_xref
 {
 	our @files;
@@ -290,6 +306,7 @@ sub update_xref
 # ========================================================================================================
 # Locates the titleblock and updates the title attribute to the name given with
 # command line argument
+#
 sub update_title
 {
 	our $titleblock_title;
@@ -328,6 +345,7 @@ sub update_title
 # ========================================================================================================
 # Locates the titleblock and updates the page and n_pages attributes to the corresponding
 # page number and number of pages.
+#
 sub update_pages
 {
 	our @files;
@@ -352,8 +370,8 @@ sub update_pages
 			# iterate attributes
 			for( my $attr_idx = 0; $attr_idx < @{$files[$file_idx]->{objects}->[$object_idx]->{Attributes}}; $attr_idx++ )
 			{
-				next if( !($files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{name}) );
-				next if( !($files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{value}) );
+				next unless $files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{name};
+				next unless $files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{value};
 				
 				my $name = $files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{name};
 				
@@ -377,6 +395,7 @@ sub update_pages
 # ========================================================================================================
 # main program
 # ========================================================================================================
+#
 
 our $do_backup = 0;
 our $do_xref = 0;
