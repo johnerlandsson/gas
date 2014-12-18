@@ -1,0 +1,158 @@
+v 20130925 2
+C 40000 40000 0 0 0 luna-title-A4.sym
+{
+T 44400 40600 5 10 1 1 0 0 1
+title=Upptagare 1
+T 44400 40300 5 10 1 1 0 0 1
+page=5
+T 45900 40300 5 10 1 1 0 0 1
+npages=6
+T 48200 40300 5 10 1 1 0 0 1
+rev=1
+T 50400 40300 5 10 1 1 0 0 1
+drawn_by=John
+T 48500 40600 5 10 1 1 0 0 1
+description=Externa funktioner
+}
+C 48100 45500 1 0 0 gp.sym
+{
+T 48275 45450 5 8 0 1 0 0 1
+refdes=X1
+T 48225 45675 5 6 1 1 0 0 1
+pinnumber=84
+}
+N 48200 42800 48200 44000 4
+N 48200 44600 48200 45600 4
+C 47900 44000 1 0 0 coil_dc.sym
+{
+T 48450 44250 5 8 1 1 0 0 1
+refdes=HR1
+T 48450 44100 5 8 1 1 0 0 1
+description=Frigivning
+T 48900 44750 5 10 0 0 0 0 1
+xref_master=1
+}
+C 42700 44100 1 0 0 push_auto_ret_no.sym
+{
+T 43050 44175 5 8 1 1 0 0 1
+refdes=S1
+T 43050 44050 5 6 1 1 0 0 1
+description=Start
+}
+N 43000 44700 43000 45600 4
+C 43600 44100 1 0 0 push_auto_ret_nc.sym
+{
+T 43850 44175 5 8 1 1 0 0 1
+refdes=S2
+T 43850 44050 5 6 1 1 0 0 1
+description=Stopp
+}
+N 43800 44700 43800 45600 4
+C 42900 43100 1 0 0 gp.sym
+{
+T 43075 43050 5 8 0 1 0 0 1
+refdes=X?
+T 43025 43275 5 6 1 1 0 0 1
+pinnumber=22
+T 42800 42900 5 10 0 1 0 0 1
+description=Start
+}
+N 43000 42800 43000 44100 4
+N 43800 42800 43800 44100 4
+C 43700 43100 1 0 0 gp.sym
+{
+T 43875 43050 5 8 0 1 0 0 1
+refdes=X?
+T 43825 43275 5 6 1 1 0 0 1
+pinnumber=24
+T 43600 42900 5 10 0 1 0 0 1
+description=Stopp
+}
+C 44300 44100 1 0 0 push_auto_ret_no.sym
+{
+T 44650 44175 5 8 1 1 0 0 1
+refdes=S3
+T 44650 44050 5 6 1 1 0 0 1
+description=Reset räkneverk
+}
+N 44600 44700 44600 45600 4
+C 44500 43100 1 0 0 gp.sym
+{
+T 44675 43050 5 8 0 1 0 0 1
+refdes=X?
+T 44625 43275 5 6 1 1 0 0 1
+pinnumber=30
+T 44300 42900 5 10 0 1 0 0 1
+description=Res räkn
+}
+N 44600 42800 44600 44100 4
+C 42900 45100 1 0 0 gp.sym
+{
+T 42575 45250 5 8 1 1 0 0 1
+refdes=X1
+T 43025 45275 5 6 1 1 0 0 1
+pinnumber=21
+}
+C 43700 45100 1 0 0 gp.sym
+{
+T 43875 45050 5 8 0 1 0 0 1
+refdes=X1
+T 43825 45275 5 6 1 1 0 0 1
+pinnumber=23
+}
+C 44500 45100 1 0 0 gp.sym
+{
+T 44675 45050 5 8 0 1 0 0 1
+refdes=X1
+T 44625 45275 5 6 1 1 0 0 1
+pinnumber=29
+}
+C 48100 42700 1 0 0 gp.sym
+{
+T 48275 42650 5 8 0 1 0 0 1
+refdes=X1
+T 48225 42875 5 6 1 1 0 0 1
+pinnumber=85
+}
+C 42900 45500 1 0 0 gp.sym
+{
+T 43075 45450 5 8 0 1 0 0 1
+refdes=X1
+T 43025 45675 5 6 1 1 0 0 1
+pinnumber=72
+}
+C 43700 45500 1 0 0 gp.sym
+{
+T 43875 45450 5 8 0 1 0 0 1
+refdes=X1
+T 43825 45675 5 6 1 1 0 0 1
+pinnumber=74
+}
+C 44500 45500 1 0 0 gp.sym
+{
+T 44675 45450 5 8 0 1 0 0 1
+refdes=X1
+T 44625 45675 5 6 1 1 0 0 1
+pinnumber=76
+}
+C 44500 42700 1 0 0 gp.sym
+{
+T 44675 42650 5 8 0 1 0 0 1
+refdes=X1
+T 44625 42875 5 6 1 1 0 0 1
+pinnumber=77
+}
+C 43700 42700 1 0 0 gp.sym
+{
+T 43875 42650 5 8 0 1 0 0 1
+refdes=X1
+T 43825 42875 5 6 1 1 0 0 1
+pinnumber=75
+}
+C 42900 42700 1 0 0 gp.sym
+{
+T 43075 42650 5 8 0 1 0 0 1
+refdes=X1
+T 43025 42875 5 6 1 1 0 0 1
+pinnumber=73
+}
