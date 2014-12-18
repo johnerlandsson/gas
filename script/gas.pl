@@ -163,6 +163,23 @@ sub map_titleblock
 }
 
 # ========================================================================================================
+# object_center
+# ========================================================================================================
+# Returns centerpoint of object
+#
+sub object_center
+{
+	die "object_center: Takes exactly one argument" unless @_ eq 1;
+	my $object = shift;
+
+	my $ret = { x => $object->{x}, y => $object->{y} };
+
+	print Dumper( $object );
+
+	return $ret;
+}
+
+# ========================================================================================================
 # hlp_update_xref
 # ========================================================================================================
 # Helper function for update_xref
@@ -299,15 +316,14 @@ sub update_xref
 			# update xref if component has xref_master attribute
 			if( $xref_master eq '1' and $refdes ne '' )
 			{
-				next if( !($files[$file_idx]->{objects}->[$object_idx]->{x}) );
-				next if( !($files[$file_idx]->{objects}->[$object_idx]->{y}) );
+				next unless $files[$file_idx]->{objects}->[$object_idx]->{x};
+				next unless $files[$file_idx]->{objects}->[$object_idx]->{y};
 				
-				my $x = $files[$file_idx]->{objects}->[$object_idx]->{x};
-				my $y = $files[$file_idx]->{objects}->[$object_idx]->{y};
+				my $cords = object_center( $files[$file_idx]->{objects}->[$object_idx] );
 				
-				print "Found valid component " . $refdes . " with attribute xref_master=1 in " . $files[$file_idx]->{fileName} . " at X" . $x . "Y" . $y . "\n";
+				print "Found valid component " . $refdes . " with attribute xref_master=1 in " . $files[$file_idx]->{fileName} . " at X" . $cords->{x} . "Y" . $cords->{y} . "\n";
 				
-				hlp_update_xref( $file_idx, $object_idx, $refdes, $x, $y );
+				hlp_update_xref( $file_idx, $object_idx, $refdes, $cords->{x}, $cords->{y} );
 			}
 			
 		}
