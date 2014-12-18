@@ -6,6 +6,10 @@ sch21pdf - Merges all .sch files in current folders into one pdf - file called s
 
 gas.pl - Page numbering, updating title field of titleblock and updating crossreferences in schematics
 
+Dependencies:
+	* gschem
+	* Parse::GEDA::Gschem
+
 Installation:
 
 	* clone the repo: git clone https://github.com/johnerlandsson/gas.git /home/user/.gEDA/gas
