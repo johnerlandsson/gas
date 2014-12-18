@@ -9,6 +9,7 @@ gas.pl - Page numbering, updating title field of titleblock and updating crossre
 Dependencies:
 	* gschem
 	* Parse::GEDA::Gschem
+	* pdfmerge
 
 Installation:
 
