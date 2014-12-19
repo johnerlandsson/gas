@@ -19,5 +19,5 @@
 (component-library (build-path gedasymbols "xref"))
 
 ; set default titleblock
-(define default-titleblock "luna-title-A4.sym")
+(define default-titleblock "title-A4.sym")
 

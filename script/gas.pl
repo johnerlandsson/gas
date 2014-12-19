@@ -90,7 +90,6 @@ sub chk_args
 # map XY cordinates to titleblock
 # used by update_xref
 #
-# TODO Work with other titleblocks
 #
 sub map_titleblock
 {
@@ -166,6 +165,7 @@ sub map_titleblock
 # object_center
 # ========================================================================================================
 # Returns centerpoint of object
+# TODO Find a way of getting component dimensions
 #
 sub object_center
 {
@@ -173,8 +173,6 @@ sub object_center
 	my $object = shift;
 
 	my $ret = { x => $object->{x}, y => $object->{y} };
-
-	print Dumper( $object );
 
 	return $ret;
 }
@@ -331,88 +329,49 @@ sub update_xref
 }
 
 # ========================================================================================================
-# update_title
+# update_titleblock
 # ========================================================================================================
-# Locates the titleblock and updates the title attribute to the name given with
+# Locates the titleblock and updates the title, pages or name attributes to the name given with
 # command line argument
 #
-sub update_title
+sub update_titleblock
 {
+	our $do_title;
 	our $titleblock_title;
+	our $do_pages;
 	our @files;
 
 	# iterate files
 	for( my $file_idx = 0; $file_idx < @files; $file_idx++ )
 	{
 		# next if file has objects in it
-		next if( !($files[$file_idx]->{objects}) );
+		next unless $files[$file_idx]->{objects};
 		
 		# iterate objects
 		for( my $object_idx = 0; $object_idx < @{$files[$file_idx]->{objects}}; $object_idx++ )
 		{
 			# next if object is a component
-			next if( !($files[$file_idx]->{objects}->[$object_idx]->{type} eq 'C') );
+			next unless $files[$file_idx]->{objects}->[$object_idx]->{type} eq 'C';
 			
 			# next if it is our titleblock
-			next if( !($files[$file_idx]->{objects}->[$object_idx]->{basename} eq 'luna-title-A4.sym') );
+			next unless ($files[$file_idx]->{objects}->[$object_idx]->{basename} eq 'title-A4.sym' or 
+				     $files[$file_idx]->{objects}->[$object_idx]->{basename} eq 'title-A3.sym');
 			
 			print "Found titleblock in: " . $files[$file_idx]->{fileName} . "\n";
 			
 			# iterate attributes
 			for( my $attr_idx = 0; $attr_idx < @{$files[$file_idx]->{objects}->[$object_idx]->{Attributes}}; $attr_idx++ )
 			{
-				next if( !($files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{name} eq 'title') );
-				$files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{value} = $titleblock_title;
-			}
-			
-		}
-	}
-}
-
-# ========================================================================================================
-# update_pages
-# ========================================================================================================
-# Locates the titleblock and updates the page and n_pages attributes to the corresponding
-# page number and number of pages.
-#
-sub update_pages
-{
-	our @files;
-
-	# iterate files
-	for( my $file_idx = 0; $file_idx < @files; $file_idx++ )
-	{
-		# next if file has objects in it
-		next if( !($files[$file_idx]->{objects}) );
-		
-		# iterate objects
-		for( my $object_idx = 0; $object_idx < @{$files[$file_idx]->{objects}}; $object_idx++ )
-		{
-			# next if object is a component
-			next if( !($files[$file_idx]->{objects}->[$object_idx]->{type} eq 'C') );
-			
-			# next if it is our titleblock
-			next if( !($files[$file_idx]->{objects}->[$object_idx]->{basename} eq 'luna-title-A4.sym') );
-			
-			print "Found titleblock in: " . $files[$file_idx]->{fileName} . "\n";
-			
-			# iterate attributes
-			for( my $attr_idx = 0; $attr_idx < @{$files[$file_idx]->{objects}->[$object_idx]->{Attributes}}; $attr_idx++ )
-			{
-				next unless $files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{name};
-				next unless $files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{value};
-				
-				my $name = $files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{name};
-				
-				given( $name )
+				given( $files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{name} )
 				{
-					when( 'page' )
+					if( $do_title )
 					{
-						$files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{value} = $file_idx + 1;
+						$files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{value} = $titleblock_title when 'title';
 					}
-					when( 'npages' )
+					if( $do_pages )
 					{
-						$files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{value} = @files;
+						$files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{value} = @files when 'npages';
+						$files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{value} = ($file_idx + 1) when 'page';
 					}
 				}
 			}
@@ -426,11 +385,12 @@ sub update_pages
 # ========================================================================================================
 #
 
-our $do_backup = 0;
+my $do_backup = 0;
 our $do_xref = 0;
 our $do_title = 0;
 our $titleblock_title = "";
 our $do_pages = 0;
+
 
 chk_args();
 
@@ -450,8 +410,7 @@ if( $do_xref or $do_title or $do_pages )
 	our @files = @{Parse::GEDA::Gschem::readSchFiles( \@schFiles )};
 
 	update_xref if $do_xref;
-	update_title if $do_title;
-	update_pages if $do_pages;
+	update_titleblock() if $do_title or $do_pages;
 
 	# Write changes to sch files
 	Parse::GEDA::Gschem::writeSchFiles( \@files );
