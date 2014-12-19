@@ -13,13 +13,17 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
+files=""
+
 for f in *.sch
 do
 	gschem -o $f".ps" -s /usr/share/gEDA/scheme/print.scm $f
-	ps2pdf $f".ps"
+	ps=$f".ps"
+	pdf=$f".pdf"
+	ps2pdf $ps
+	files="$files $ps $pdf"
 done
 
-pdfmerge *.pdf schematic.pdf.tmp
-rm *.ps
-rm *.pdf
-mv schematic.pdf.tmp schematic.pdf
+rm schematic.pdf 2> /dev/null
+pdfmerge *.pdf schematic.pdf
+rm $files
