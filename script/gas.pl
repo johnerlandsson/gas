@@ -34,6 +34,7 @@ sub usage
 	print "-x -xref\t\tUpdate crossreferences on all schematics in folder.\n";
 	print "-t -title [TITLE]\tSets the title attribute on titleblocks.\n";
 	print "-p -pages\t\tUpdates the page number part of titleblocks.\n";
+	print "-a -author [AUTHOR]\tSets the drawn_by attribute on titleblocks\n";
 	print "\n";
 }
 
@@ -44,13 +45,16 @@ sub usage
 sub chk_args
 {
 	our @ARGV;
-	our $do_backup;
-	our $do_xref;
-	our $do_title;
-	our $titleblock_title;
-	our $do_pages;
 	
-	my $args = { do_backup => 0, do_xref => 0, do_title => 0, titleblock_title => "", do_pages => 0 };
+	my $args = { 
+			do_backup => 0, 
+			do_xref => 0, 
+			do_title => 0, 
+			titleblock_title => "", 
+			do_pages => 0, 
+			do_drawn_by => 0, 
+			titleblock_drawn_by => "" 
+		   };
 
 	# iterate arguments
 	for( my $arg_idx = 0; $arg_idx < @ARGV; $arg_idx++ )
@@ -58,26 +62,28 @@ sub chk_args
 		if( $ARGV[$arg_idx] =~ /^-x(ref)?$/ )
 		{
 			$args->{do_xref} = 1;
-			$do_xref = 1;
 		}
 		elsif( $ARGV[$arg_idx] =~ /^-t(itle)?$/ )
 		{
 			die "No title given..." unless $arg_idx lt (@ARGV - 1);
 			$args->{do_title} = 1;
-			$do_title = 1;
 			$arg_idx++;
-			$titleblock_title = $ARGV[$arg_idx];
 			$args->{titleblock_title} = $ARGV[$arg_idx];
 		}
 		elsif( $ARGV[$arg_idx] =~ /^-b(ck)?$/ )
 		{
-			$do_backup = 1;
 			$args->{do_backup} = 1;
 		}
 		elsif( $ARGV[$arg_idx] =~ /^-p(ages)?$/ )
 		{
-			$do_pages = 1;
 			$args->{do_pages} = 1;
+		}
+		elsif( $ARGV[$arg_idx] =~ /^-a(uthor)?$/ )
+		{
+			die "No author given..." unless $arg_idx lt (@ARGV - 1);
+			$args->{do_drawn_by} = 1;
+			$arg_idx++;
+			$args->{titleblock_drawn_by} = $ARGV[$arg_idx];
 		}
 		elsif( $ARGV[$arg_idx] =~ /^-h(elp)?$/ )
 		{
@@ -99,6 +105,7 @@ sub chk_args
 # map XY cordinates to titleblock
 # used by update_xref
 #
+#TODO do this mathematically
 #
 sub map_titleblock
 {
@@ -381,6 +388,10 @@ sub update_titleblock
 					{
 						$files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{value} = @files when 'npages';
 						$files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{value} = ($file_idx + 1) when 'page';
+					}
+					if( $args->{do_drawn_by} )
+					{
+						$files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{value} = $args->{titleblock_drawn_by} when 'drawn_by';
 					}
 				}
 			}

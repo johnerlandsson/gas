@@ -87,7 +87,7 @@ npages=?
 T 8200 300 8 10 1 1 0 0 1
 rev=1
 T 10400 300 8 10 1 1 0 0 1
-drawn_by=John
+drawn_by=?
 L 7300 800 7300 500 15 0 0 0 -1 -1
 T 8500 600 8 10 1 1 0 0 1
 description=?
