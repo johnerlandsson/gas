@@ -49,28 +49,35 @@ sub chk_args
 	our $do_title;
 	our $titleblock_title;
 	our $do_pages;
+	
+	my $args = { do_backup => 0, do_xref => 0, do_title => 0, titleblock_title => "", do_pages => 0 };
 
 	# iterate arguments
 	for( my $arg_idx = 0; $arg_idx < @ARGV; $arg_idx++ )
 	{
 		if( $ARGV[$arg_idx] =~ /^-x(ref)?$/ )
 		{
+			$args->{do_xref} = 1;
 			$do_xref = 1;
 		}
 		elsif( $ARGV[$arg_idx] =~ /^-t(itle)?$/ )
 		{
 			die "No title given..." unless $arg_idx lt (@ARGV - 1);
+			$args->{do_title} = 1;
 			$do_title = 1;
 			$arg_idx++;
 			$titleblock_title = $ARGV[$arg_idx];
+			$args->{titleblock_title} = $ARGV[$arg_idx];
 		}
 		elsif( $ARGV[$arg_idx] =~ /^-b(ck)?$/ )
 		{
 			$do_backup = 1;
+			$args->{do_backup} = 1;
 		}
 		elsif( $ARGV[$arg_idx] =~ /^-p(ages)?$/ )
 		{
 			$do_pages = 1;
+			$args->{do_pages} = 1;
 		}
 		elsif( $ARGV[$arg_idx] =~ /^-h(elp)?$/ )
 		{
@@ -82,6 +89,8 @@ sub chk_args
 			die "Unknown argument: " . $ARGV[$arg_idx];
 		}
 	}
+
+	return $args;
 }
 
 # ========================================================================================================
@@ -336,9 +345,9 @@ sub update_xref
 #
 sub update_titleblock
 {
-	our $do_title;
-	our $titleblock_title;
-	our $do_pages;
+	die "update_titleblock requires exactly one argument" unless @_ eq 1;
+
+	my $args = $_[0];
 	our @files;
 
 	# iterate files
@@ -364,11 +373,11 @@ sub update_titleblock
 			{
 				given( $files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{name} )
 				{
-					if( $do_title )
+					if( $args->{do_title} )
 					{
-						$files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{value} = $titleblock_title when 'title';
+						$files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{value} = $args->{titleblock_title} when 'title';
 					}
-					if( $do_pages )
+					if( $args->{do_pages} )
 					{
 						$files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{value} = @files when 'npages';
 						$files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$attr_idx]->{value} = ($file_idx + 1) when 'page';
@@ -385,32 +394,26 @@ sub update_titleblock
 # ========================================================================================================
 #
 
-my $do_backup = 0;
-our $do_xref = 0;
-our $do_title = 0;
-our $titleblock_title = "";
-our $do_pages = 0;
-
-
-chk_args();
+our @files;
+my $args = chk_args();
 
 # Get names of all sch files in current dir
 my @schFiles = <*.sch>;
 
 # back up schematic files
-if( $do_backup )
+if( $args->{do_backup} )
 {
 	print "Creating backup...\n";
 	Parse::GEDA::Gschem::bakSchFiles( \@schFiles );
 }
 
-if( $do_xref or $do_title or $do_pages )
+if( $args->{do_xref} or $args->{do_title} or $args->{do_pages} )
 {
 	# Parse sch files
-	our @files = @{Parse::GEDA::Gschem::readSchFiles( \@schFiles )};
+	@files = @{Parse::GEDA::Gschem::readSchFiles( \@schFiles )};
 
-	update_xref if $do_xref;
-	update_titleblock() if $do_title or $do_pages;
+	update_xref if $args->{do_xref};
+	update_titleblock( $args ) if $args->{do_title} or $args->{do_pages};
 
 	# Write changes to sch files
 	Parse::GEDA::Gschem::writeSchFiles( \@files );
