@@ -25,7 +25,8 @@ $Parse::GEDA::Gschem::ERRORFILENAME = 'error.log';
 # usage
 # ========================================================================================================
 # Print usage information
-sub usage
+#
+sub usage()
 {
 	print "Usage $0 [-htx]";
 	print "\n";
@@ -42,7 +43,8 @@ sub usage
 # chk_args
 # ========================================================================================================
 # Handle command line arguments
-sub chk_args
+#
+sub chk_args()
 {
 	our @ARGV;
 	
@@ -92,11 +94,46 @@ sub chk_args
 		else
 		{
 			usage();
-			die "Unknown argument: " . $ARGV[$arg_idx];
+			print "\nUnknown argument: " . $ARGV[$arg_idx] . "\n";
+			exit 1;
 		}
 	}
 
 	return $args;
+}
+
+# ========================================================================================================
+# titleblock_origin
+# ========================================================================================================
+# Returns the xy coordinates of titleblock origin if any.
+#
+sub titleblock_origin()
+{
+	our @files;
+	my $ret = { x => -1, y => -1 };
+
+	# iterate files
+	for( my $file_idx = 0; $file_idx < @files; $file_idx++ )
+	{
+		# next if file has objects in it
+		next unless $files[$file_idx]->{objects};
+		
+		# iterate objects
+		for( my $object_idx = 0; $object_idx < @{$files[$file_idx]->{objects}}; $object_idx++ )
+		{
+			# next if object is a component
+			next unless $files[$file_idx]->{objects}->[$object_idx]->{type} eq 'C';
+			
+			# next if it is our titleblock
+			next unless ($files[$file_idx]->{objects}->[$object_idx]->{basename} eq 'title-A4.sym' or 
+				     $files[$file_idx]->{objects}->[$object_idx]->{basename} eq 'title-A3.sym');
+
+			$ret->{x} = $files[$file_idx]->{objects}->[$object_idx]->{x};
+			$ret->{y} = $files[$file_idx]->{objects}->[$object_idx]->{y};
+		}
+	}
+			
+	return $ret;
 }
 
 # ========================================================================================================
@@ -105,74 +142,19 @@ sub chk_args
 # map XY cordinates to titleblock
 # used by update_xref
 #
-#TODO do this mathematically
 #
-sub map_titleblock
+sub map_titleblock( $$ )
 {
-	die "Too many arguments to map_titleblock" unless @_ <= 2;
-	die "Too few arguments to map_titleblock" unless @_ >= 2;
+	my $x = $_[0]->{x};
+	my $y = $_[0]->{y};
+	my $tb_origin = $_[1];
 
-	my $x = $_[0];
-	my $y = $_[1];
-	my $ret_x = "";
-	my $ret_y = "";
-
-	# map X coordinate to number
-	if( $x ge 40200 and $x le 42000 )
-	{
-		$ret_x = '1';
-	}
-	elsif( $x gt 42000 and $x le 43900 )
-	{
-		$ret_x = '2';
-	}
-	elsif( $x gt 43900 and $x le 45900 )
-	{
-		$ret_x = '3';
-	}
-	elsif( $x gt 45900 and $x le 47900 )
-	{
-		$ret_x = '4';
-	}
-	elsif( $x gt 47900 and $x le 49800 )
-	{
-		$ret_x = '5';
-	}
-	elsif( $x gt 49800 and $x le 51400 )
-	{
-		$ret_x = '6';
-	}
-	else
-	{
-		die "map_titleblock: invalid X coordinate";
-	}
-
-
-	# map Y coordinate to number
-	if( $y ge 40200 and $y le 42000 )
-	{
-		$ret_y = 'A';
-	}
-	elsif( $y ge 42000 and $y le 43900 )
-	{
-		$ret_y = 'B';
-	}
-	elsif( $y ge 43900 and $y le 45900 )
-	{
-		$ret_y = 'C';
-	}
-	elsif( $y ge 45900 and $y le 47900 )
-	{
-		$ret_y = 'D';
-	}
-	elsif( $y ge 47900 and $y le 48000 )
-	{
-		$ret_y = 'E';
-	}
-	else
-	{
-		die "map_titleblock: invalid Y coordinate";
-	}
+	use POSIX;
+	my $x_diff = $x - $tb_origin->{x};
+	my $ret_x = floor( ($x_diff - 200) / 1800 );
+	
+	my $y_diff = $y - $tb_origin->{y};
+	my $ret_y = chr( (($y_diff - 200) / 1800) + 65 );
 
 	return $ret_y . $ret_x;
 }
@@ -183,9 +165,8 @@ sub map_titleblock
 # Returns centerpoint of object
 # TODO Find a way of getting component dimensions
 #
-sub object_center
+sub object_center( $ )
 {
-	die "object_center: Takes exactly one argument" unless @_ eq 1;
 	my $object = shift;
 
 	my $ret = { x => $object->{x}, y => $object->{y} };
@@ -200,16 +181,12 @@ sub object_center
 # Reiterates all files and components looking for the refdes that was found by update_xref
 # then updates or adds the xref attribute with coordinates mapped to the titleblock
 #
-sub hlp_update_xref
+sub hlp_update_xref( $$$$ )
 {
-	die "Too many arguments to update_xref" unless @_ <= 5;
-	die "Too few arguments to update_xref" unless @_ >= 5;
-
 	my $b_file_idx = $_[0];
 	my $b_object_idx = $_[1];
 	my $b_refdes = $_[2];
-	my $b_x = $_[3];
-	my $b_y = $_[4];
+	my $xref_str = $_[3];
 
 	our @files;
 
@@ -223,7 +200,6 @@ sub hlp_update_xref
 			my $refdes_idx = -1;
 			my $refdes_value = "";
 			my $xref_idx = -1;
-			my $xref_value = $_[0] + 1 . '-' . map_titleblock( $b_x, $b_y );
 
 			# iterate attributes
 			for( my $attr_idx = 0; $attr_idx < @{$files[$file_idx]->{objects}->[$object_idx]->{Attributes}}; $attr_idx++ )
@@ -251,7 +227,7 @@ sub hlp_update_xref
 					#Update existing xref attribute if exsists
 					if( $xref_idx ge 0 )
 					{
-						$files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$xref_idx]->{value} = $xref_value;
+						$files[$file_idx]->{objects}->[$object_idx]->{Attributes}->[$xref_idx]->{value} = $xref_str;
 					}
 					#Otherwise create new xref attribute
 					else
@@ -260,7 +236,7 @@ sub hlp_update_xref
 						my %new_attr = (
 								alignment => '0',
 								show_name_value => '1',
-								value => $xref_value,
+								value => $xref_str,
 								angle => '0',
 								x => $files[$file_idx]->{objects}->[$object_idx]->{x},
 								size => '6',
@@ -288,7 +264,7 @@ sub hlp_update_xref
 # Then locates all symbols with the same refdes and updates the xref attribute with the position of
 # master object
 #
-sub update_xref
+sub update_xref()
 {
 	our @files;
 
@@ -297,7 +273,10 @@ sub update_xref
 	{
 		# next if file has objects in it
 		next if( !($files[$file_idx]->{objects}) );
-		
+
+		# fetch titleblock origin once every sheet
+		my $tb_origin = titleblock_origin();
+
 		# iterate objects
 		for( my $object_idx = 0; $object_idx < @{$files[$file_idx]->{objects}}; $object_idx++ )
 		{
@@ -337,7 +316,8 @@ sub update_xref
 				
 				print "Found valid component " . $refdes . " with attribute xref_master=1 in " . $files[$file_idx]->{fileName} . " at X" . $cords->{x} . "Y" . $cords->{y} . "\n";
 				
-				hlp_update_xref( $file_idx, $object_idx, $refdes, $cords->{x}, $cords->{y} );
+				my $xref_str = ($file_idx + 1) . '-' . map_titleblock( $cords, $tb_origin );
+				hlp_update_xref( $file_idx, $object_idx, $refdes, $xref_str );
 			}
 			
 		}
@@ -350,10 +330,8 @@ sub update_xref
 # Locates the titleblock and updates the title, pages or name attributes to the name given with
 # command line argument
 #
-sub update_titleblock
+sub update_titleblock( $ )
 {
-	die "update_titleblock requires exactly one argument" unless @_ eq 1;
-
 	my $args = $_[0];
 	our @files;
 
@@ -410,6 +388,11 @@ my $args = chk_args();
 
 # Get names of all sch files in current dir
 my @schFiles = <*.sch>;
+if( @schFiles le 0 )
+{
+	print "No *.sch files in current folder...";
+	exit 1;
+}
 
 # back up schematic files
 if( $args->{do_backup} )
@@ -418,16 +401,19 @@ if( $args->{do_backup} )
 	Parse::GEDA::Gschem::bakSchFiles( \@schFiles );
 }
 
-if( $args->{do_xref} or $args->{do_title} or $args->{do_pages} )
+if( $args->{do_xref} or 
+    $args->{do_title} or 
+    $args->{do_pages} or
+    $args->{do_drawn_by} )
 {
 	# Parse sch files
 	@files = @{Parse::GEDA::Gschem::readSchFiles( \@schFiles )};
 
-	update_xref if $args->{do_xref};
-	update_titleblock( $args ) if $args->{do_title} or $args->{do_pages};
+	update_xref() if $args->{do_xref};
+	update_titleblock( $args ) if $args->{do_title} or $args->{do_pages} or $args->{do_drawn_by};
 
 	# Write changes to sch files
 	Parse::GEDA::Gschem::writeSchFiles( \@files );
 }
 
-print "Done...\n";
+exit 0;
