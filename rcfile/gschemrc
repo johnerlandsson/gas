@@ -4,8 +4,12 @@
 ; empty the library path and populate it with local paths
 (reset-component-library)
 
+; define the path where gas is installed
+(define gaspath "${HOME}/.gEDA/gas")
+
 ; set library paths
-(define gedasymbols "${HOME}/.gEDA/gas/symbols")
+;(define gedasymbols "${HOME}/.gEDA/gas/symbols")
+(define gedasymbols (string-append gaspath "/symbols"))
 (component-library (build-path gedasymbols "connectors"))
 (component-library (build-path gedasymbols "counters"))
 (component-library (build-path gedasymbols "electronics"))
@@ -25,7 +29,7 @@
 (define xref 
 	(lambda ()
 	 	(file-save-all)
-	 	(system "~/.gEDA/gas/script/gas.pl -x -b")
+	 	(system (string-append gaspath "/script/gas.pl -x -b"))
 		(page-revert)
 	)	
 )
@@ -33,7 +37,7 @@
 (define tb_pages
  	(lambda ()
 	 	(file-save-all)
-	 	(system "~/.gEDA/gas/script/gas.pl -p -b")
+	 	(system (string-append gaspath "/script/gas.pl -p -b"))
 		(page-revert)
 	)	
 )
@@ -41,9 +45,7 @@
 (define tb_title
  	(lambda (title)
 	 	(file-save-all)
-		(let ((cmd "~/.gEDA/gas/script/gas.pl -b -t \""))
-		 	(system (string-append (string-append cmd title) "\""))
-		)
+		(system (string-append (string-append (string-append gaspath "/script/gas.pl -b -t \"") title) "\""))
 		(page-revert)
 	)
 )
@@ -51,9 +53,21 @@
 (define tb_drawn_by
  	(lambda (drawn_by)
 	 	(file-save-all)
-		(let ((cmd "~/.gEDA/gas/script/gas.pl -b -a \""))
-		 	(system (string-append (string-append cmd drawn_by) "\""))
-		)
+		(system (string-append (string-append (string-append gaspath "/script/gas.pl -b -a \"") drawn_by) "\""))
 		(page-revert)
 	)
 )
+
+(define mk_pdf
+ 	(lambda ()
+	 	(file-save-all)
+	 	(system (string-append gaspath "/script/sch21pdf"))
+	)	
+)
+
+
+; keymaps
+(global-set-key "G X" 'xref)
+(global-set-key "G P" 'tb_pages)
+(global-set-key "G M" 'mk_pdf)
+
