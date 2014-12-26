@@ -8,8 +8,7 @@
 (define gaspath "${HOME}/.gEDA/gas")
 
 ; set library paths
-;(define gedasymbols "${HOME}/.gEDA/gas/symbols")
-(define gedasymbols (string-append gaspath "/symbols"))
+(define gedasymbols (build-path gaspath "symbols"))
 (component-library (build-path gedasymbols "connectors"))
 (component-library (build-path gedasymbols "counters"))
 (component-library (build-path gedasymbols "electronics"))
@@ -26,42 +25,57 @@
 (define default-titleblock "title-A4.sym")
 
 ; macro definitions
+(define scpath (build-path gaspath "script"))
+
+(define revert-all
+ 	(lambda ()
+	 	(use-modules (geda page))
+		(map (lambda (p)
+		      (set-active-page! p)
+		      (page-revert)
+		     )
+		 (active-pages)
+		)
+	)
+)
+
+
 (define xref 
 	(lambda ()
 	 	(file-save-all)
-	 	(system (string-append gaspath "/script/gas.pl -x -b"))
-		(page-revert)
+	 	(system (string-append scpath "/gas.pl -x -b"))
+		(revert-all)
 	)	
 )
 
 (define tb_pages
  	(lambda ()
 	 	(file-save-all)
-	 	(system (string-append gaspath "/script/gas.pl -p -b"))
-		(page-revert)
+	 	(system (string-append scpath "/gas.pl -p -b"))
+		(revert-all)
 	)	
 )
 
 (define tb_title
  	(lambda (title)
 	 	(file-save-all)
-		(system (string-append (string-append (string-append gaspath "/script/gas.pl -b -t \"") title) "\""))
-		(page-revert)
+		(system (string-append (string-append (string-append scpath "/gas.pl -b -t \"") title) "\""))
+		(revert-all)
 	)
 )
 
 (define tb_drawn_by
  	(lambda (drawn_by)
 	 	(file-save-all)
-		(system (string-append (string-append (string-append gaspath "/script/gas.pl -b -a \"") drawn_by) "\""))
-		(page-revert)
+		(system (string-append (string-append (string-append scpath "/gas.pl -b -a \"") drawn_by) "\""))
+		(revert-all)
 	)
 )
 
 (define mk_pdf
  	(lambda ()
 	 	(file-save-all)
-	 	(system (string-append gaspath "/script/sch21pdf"))
+	 	(system (string-append scpath "/sch21pdf"))
 	)	
 )
 
