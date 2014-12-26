@@ -33,15 +33,15 @@ $Parse::GEDA::Gschem::ERRORFILENAME = 'error.log';
 #
 sub usage()
 {
-	print "Usage $0 [-htx]";
-	print "\n";
-	print "-b -bck\t\tCreate backup before performing actions.\n";
-	print "-h -help\t\tDisplay this help.\n";
-	print "-x -xref\t\tUpdate crossreferences on all schematics in folder.\n";
-	print "-t -title [TITLE]\tSets the title attribute on titleblocks.\n";
-	print "-p -pages\t\tUpdates the page number part of titleblocks.\n";
-	print "-a -author [AUTHOR]\tSets the drawn_by attribute on titleblocks\n";
-	print "\n";
+	say "Usage $0 [-htx]";
+	say "";
+	say "-b -bck\t\tCreate backup before performing actions.";
+	say "-h -help\t\tDisplay this help.";
+	say "-x -xref\t\tUpdate crossreferences on all schematics in folder.";
+	say "-t -title [TITLE]\tSets the title attribute on titleblocks.";
+	say "-p -pages\t\tUpdates the page number part of titleblocks.";
+	say "-a -author [AUTHOR]\tSets the drawn_by attribute on titleblocks";
+	say "";
 }
 
 # ========================================================================================================
@@ -74,7 +74,7 @@ sub chk_args()
 		{
 			if( $arg_idx ge (@ARGV - 1) )
 			{
-				print STDERR "No title given...";
+				say STDERR "No title given...";
 				next;
 			}
 
@@ -94,7 +94,7 @@ sub chk_args()
 		{
 			if( $arg_idx ge (@ARGV - 1) )
 			{
-				print STDERR "No author given...";
+				say STDERR "No author given...";
 				next;
 			}
 
@@ -109,7 +109,7 @@ sub chk_args()
 		else
 		{
 			usage();
-			print STDERR "\nUnknown argument: " . $ARGV[$arg_idx] . "\n";
+			say STDERR "\nUnknown argument: " . $ARGV[$arg_idx];
 			exit 1;
 		}
 	}
@@ -163,13 +163,24 @@ sub map_titleblock( $$ )
 	my $x = $_[0]->{x};
 	my $y = $_[0]->{y};
 	my $tb_origin = $_[1];
+	my $border_step = 1918;
 
 	use POSIX;
 	my $x_diff = $x - $tb_origin->{x};
-	my $ret_x = floor( ($x_diff - 200) / 1800 );
+	my $ret_x = ceil( ($x_diff - 200) / $border_step );
+	if( $ret_x gt 9 or $ret_x lt 1 )
+	{
+		say STDERR "map_titleblock: Invalid X-position";
+		exit 1;
+	}
 	
 	my $y_diff = $y - $tb_origin->{y};
-	my $ret_y = chr( (($y_diff - 200) / 1800) + 65 );
+	my $ret_y = chr( (($y_diff - 200) / $border_step) + 65 );
+	if( $ret_y gt 'F' or $ret_y lt 'A' )
+	{
+		say STDERR "map_titleblock: Invalid Y-position";
+		exit 1;
+	}
 
 	return $ret_y . $ret_x;
 }
@@ -263,7 +274,7 @@ sub hlp_update_xref( $$$$ )
 								visibility => '1'
 							       );
 
-						print "Adding new xref attribute to " . $refdes_value . " on page " . ($file_idx + 1) . "\n";
+						say "Adding new xref attribute to " . $refdes_value . " on page " . ($file_idx + 1);
 						push( $files[$file_idx]->{objects}->[$object_idx]->{Attributes}, \%new_attr );
 					}
 				}
@@ -329,7 +340,7 @@ sub update_xref()
 				
 				my $cords = object_center( $files[$file_idx]->{objects}->[$object_idx] );
 				
-				print "Found valid component " . $refdes . " with attribute xref_master=1 in " . $files[$file_idx]->{fileName} . " at X" . $cords->{x} . "Y" . $cords->{y} . "\n";
+				say "Found valid component " . $refdes . " with attribute xref_master=1 in " . $files[$file_idx]->{fileName} . " at X" . $cords->{x} . "Y" . $cords->{y};
 				
 				my $xref_str = ($file_idx + 1) . '-' . map_titleblock( $cords, $tb_origin );
 				hlp_update_xref( $file_idx, $object_idx, $refdes, $xref_str );
@@ -366,7 +377,7 @@ sub update_titleblock( $ )
 			next unless ($files[$file_idx]->{objects}->[$object_idx]->{basename} eq 'title-A4.sym' or 
 				     $files[$file_idx]->{objects}->[$object_idx]->{basename} eq 'title-A3.sym');
 			
-			print "Found titleblock in: " . $files[$file_idx]->{fileName} . "\n";
+			say "Found titleblock in: " . $files[$file_idx]->{fileName};
 			
 			# iterate attributes
 			for( my $attr_idx = 0; $attr_idx < @{$files[$file_idx]->{objects}->[$object_idx]->{Attributes}}; $attr_idx++ )
@@ -405,14 +416,14 @@ my $args = chk_args();
 my @schFiles = <*.sch>;
 if( @schFiles le 0 )
 {
-	print STDERR "No *.sch files in current folder...\n";
+	say STDERR "No *.sch files in current folder...";
 	exit 1;
 }
 
 # back up schematic files
 if( $args->{do_backup} )
 {
-	print "Creating backup...\n";
+	say "Creating backup...";
 	Parse::GEDA::Gschem::bakSchFiles( \@schFiles ); 
 }
 
