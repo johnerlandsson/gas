@@ -21,3 +21,39 @@
 ; set default titleblock
 (define default-titleblock "title-A4.sym")
 
+; macro definitions
+(define xref 
+	(lambda ()
+	 	(file-save-all)
+	 	(system "~/.gEDA/gas/script/gas.pl -x -b")
+		(page-revert)
+	)	
+)
+
+(define tb_pages
+ 	(lambda ()
+	 	(file-save-all)
+	 	(system "~/.gEDA/gas/script/gas.pl -p -b")
+		(page-revert)
+	)	
+)
+
+(define tb_title
+ 	(lambda (title)
+	 	(file-save-all)
+		(let ((cmd "~/.gEDA/gas/script/gas.pl -b -t \""))
+		 	(system (string-append (string-append cmd title) "\""))
+		)
+		(page-revert)
+	)
+)
+
+(define tb_drawn_by
+ 	(lambda (drawn_by)
+	 	(file-save-all)
+		(let ((cmd "~/.gEDA/gas/script/gas.pl -b -a \""))
+		 	(system (string-append (string-append cmd drawn_by) "\""))
+		)
+		(page-revert)
+	)
+)

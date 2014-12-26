@@ -12,6 +12,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+# gas.pl 
+# This script is a part of the gEDA Automation Schematic bundle.
+# It handles updating the titleblock and crossreferences between components
+# and pages.
 
 use 5.18.4;
 
@@ -67,7 +72,12 @@ sub chk_args()
 		}
 		elsif( $ARGV[$arg_idx] =~ /^-t(itle)?$/ )
 		{
-			die "No title given..." unless $arg_idx lt (@ARGV - 1);
+			if( $arg_idx ge (@ARGV - 1) )
+			{
+				print STDERR "No title given...";
+				next;
+			}
+
 			$args->{do_title} = 1;
 			$arg_idx++;
 			$args->{titleblock_title} = $ARGV[$arg_idx];
@@ -82,7 +92,12 @@ sub chk_args()
 		}
 		elsif( $ARGV[$arg_idx] =~ /^-a(uthor)?$/ )
 		{
-			die "No author given..." unless $arg_idx lt (@ARGV - 1);
+			if( $arg_idx ge (@ARGV - 1) )
+			{
+				print STDERR "No author given...";
+				next;
+			}
+
 			$args->{do_drawn_by} = 1;
 			$arg_idx++;
 			$args->{titleblock_drawn_by} = $ARGV[$arg_idx];
@@ -94,7 +109,7 @@ sub chk_args()
 		else
 		{
 			usage();
-			print "\nUnknown argument: " . $ARGV[$arg_idx] . "\n";
+			print STDERR "\nUnknown argument: " . $ARGV[$arg_idx] . "\n";
 			exit 1;
 		}
 	}
@@ -390,7 +405,7 @@ my $args = chk_args();
 my @schFiles = <*.sch>;
 if( @schFiles le 0 )
 {
-	print "No *.sch files in current folder...";
+	print STDERR "No *.sch files in current folder...\n";
 	exit 1;
 }
 
@@ -398,7 +413,7 @@ if( @schFiles le 0 )
 if( $args->{do_backup} )
 {
 	print "Creating backup...\n";
-	Parse::GEDA::Gschem::bakSchFiles( \@schFiles );
+	Parse::GEDA::Gschem::bakSchFiles( \@schFiles ); 
 }
 
 if( $args->{do_xref} or 
