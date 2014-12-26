@@ -22,12 +22,18 @@ Installation:
 Usage:
 	When editing your schematic:
 		* press ':' to open the "Invoke macro input"
-			* (tb_title "New title") - Updates the titleblock attribute title to New title on all .sch files in current folder
-			* (tb_drawn_by "Author's name") - Updates the titleblock attribute drawn_by to Author's name on all .sch files in current folder
+			* (tb_title "New title") - Updates the titleblock attribute title to 
+						   New title on all .sch files in current folder
+			* (tb_drawn_by "Author's name") - Updates the titleblock attribute drawn_by 
+							  to Author's name on all .sch files in 
+							  current folder
 		* press keys g and x - Updates the crossreferences on all sch files in current folder. 
-				       The script looks for components with the attribute xref_master set to '1'.
-				       It then reiterates all files and updates the xref attribute on all components with the same refdes as the master component
-				       The xref attribute will be created if non-exiting
-		* press keys g and p - Updates the titleblock page numbering attributes on all sch files in current folder.
-		* press keys g and m - Merges all sch files in current folder into one single pdf called schematic.pdf
+				       The script looks for components with the attribute xref_master 
+				       set to '1'. It then reiterates all files and updates the xref 
+				       attribute on all components with the same refdes as the master 
+				       component. The xref attribute will be created if non-exiting
+		* press keys g and p - Updates the titleblock page numbering attributes on all sch 
+				       files in current folder.
+		* press keys g and m - Merges all sch files in current folder into one single pdf 
+				      called schematic.pdf
 
