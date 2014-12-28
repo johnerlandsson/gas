@@ -1,5 +1,5 @@
 v 20130925 2
-C 40000 40000 0 0 0 luna-title-A4.sym
+C 40000 40000 0 0 0 title-A4.sym
 {
 T 44400 40600 5 10 1 1 0 0 1
 title=Upptagare 1
@@ -29,13 +29,13 @@ T 48450 44250 5 8 1 1 0 0 1
 refdes=HR1
 T 48450 44100 5 8 1 1 0 0 1
 description=Frigivning
-T 48900 44750 5 10 0 0 0 0 1
+T 47900 44000 5 10 0 2 0 0 1
 xref_master=1
 }
 C 42700 44100 1 0 0 push_auto_ret_no.sym
 {
 T 43050 44175 5 8 1 1 0 0 1
-refdes=S1
+refdes=S?
 T 43050 44050 5 6 1 1 0 0 1
 description=Start
 }
@@ -43,7 +43,7 @@ N 43000 44700 43000 45600 4
 C 43600 44100 1 0 0 push_auto_ret_nc.sym
 {
 T 43850 44175 5 8 1 1 0 0 1
-refdes=S2
+refdes=S?
 T 43850 44050 5 6 1 1 0 0 1
 description=Stopp
 }
@@ -71,7 +71,7 @@ description=Stopp
 C 44300 44100 1 0 0 push_auto_ret_no.sym
 {
 T 44650 44175 5 8 1 1 0 0 1
-refdes=S3
+refdes=S?
 T 44650 44050 5 6 1 1 0 0 1
 description=Reset räkneverk
 }

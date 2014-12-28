@@ -150,7 +150,7 @@ sub titleblock_origin()
 
 	if( $ret->{x} lt 0 or $ret->{y} lt 0  )
 	{
-		say STDERR "titleblock_origin: no titleblock found";
+		say STDERR "titleblock_origin: No valid titleblock found";
 		exit 1;
 	}
 			
@@ -195,7 +195,6 @@ sub map_titleblock( $$ )
 # object_refdes_cords
 # ========================================================================================================
 # Returns origin of object's refdes label
-# TODO Find a way of getting component dimensions
 #
 sub object_refdes_cords( $ )
 {
@@ -283,7 +282,7 @@ sub hlp_update_xref( $$$$ )
 								angle => '0',
 								x => $files[$file_idx]->{objects}->[$object_idx]->{x},
 								size => '6',
-								y => $files[$file_idx]->{objects}->[$object_idx]->{y},
+								y => $files[$file_idx]->{objects}->[$object_idx]->{y} - 10,
 								color => '5',
 								name => 'xref',
 								type => 'T',
