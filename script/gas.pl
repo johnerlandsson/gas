@@ -147,6 +147,12 @@ sub titleblock_origin()
 			$ret->{y} = $files[$file_idx]->{objects}->[$object_idx]->{y};
 		}
 	}
+
+	if( $ret->{x} lt 0 or $ret->{y} lt 0  )
+	{
+		say STDERR "titleblock_origin: no titleblock found";
+		exit 1;
+	}
 			
 	return $ret;
 }
@@ -163,22 +169,22 @@ sub map_titleblock( $$ )
 	my $x = $_[0]->{x};
 	my $y = $_[0]->{y};
 	my $tb_origin = $_[1];
-	my $border_step = 1918;
+	my $border_step = 1968;
 
 	use POSIX;
 	my $x_diff = $x - $tb_origin->{x};
-	my $ret_x = ceil( ($x_diff - 200) / $border_step );
+	my $ret_x = ceil( $x_diff / $border_step );
 	if( $ret_x gt 9 or $ret_x lt 1 )
 	{
-		say STDERR "map_titleblock: Invalid X-position";
+		say STDERR "map_titleblock: Invalid X-position $ret_x, $x";
 		exit 1;
 	}
 	
 	my $y_diff = $y - $tb_origin->{y};
-	my $ret_y = chr( (($y_diff - 200) / $border_step) + 65 );
+	my $ret_y = chr( ($y_diff / $border_step) + 65 );
 	if( $ret_y gt 'F' or $ret_y lt 'A' )
 	{
-		say STDERR "map_titleblock: Invalid Y-position";
+		say STDERR "map_titleblock: Invalid Y-position $ret_y, $y";
 		exit 1;
 	}
 
@@ -186,16 +192,27 @@ sub map_titleblock( $$ )
 }
 
 # ========================================================================================================
-# object_center
+# object_refdes_cords
 # ========================================================================================================
-# Returns centerpoint of object
+# Returns origin of object's refdes label
 # TODO Find a way of getting component dimensions
 #
-sub object_center( $ )
+sub object_refdes_cords( $ )
 {
 	my $object = shift;
+	my $ret = { x => -1, y => -1 };
 
-	my $ret = { x => $object->{x}, y => $object->{y} };
+	foreach my $catt ( @{$object->{Attributes}} )
+	{
+		if( $catt->{name} eq "refdes" )
+		{
+			$ret->{x} = $catt->{x};
+			$ret->{y} = $catt->{y};
+			return $ret;
+		}
+	}
+
+
 
 	return $ret;
 }
@@ -338,7 +355,7 @@ sub update_xref()
 				next unless $files[$file_idx]->{objects}->[$object_idx]->{x};
 				next unless $files[$file_idx]->{objects}->[$object_idx]->{y};
 				
-				my $cords = object_center( $files[$file_idx]->{objects}->[$object_idx] );
+				my $cords = object_refdes_cords( $files[$file_idx]->{objects}->[$object_idx] );
 				
 				say "Found valid component " . $refdes . " with attribute xref_master=1 in " . $files[$file_idx]->{fileName} . " at X" . $cords->{x} . "Y" . $cords->{y};
 				
