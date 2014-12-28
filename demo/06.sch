@@ -64,7 +64,7 @@ xref_master=1
 }
 N 43000 41300 43000 41700 4
 {
-T 42450 41400 5 4 1 1 180 0 1
+T 42950 41450 5 4 1 1 90 0 1
 netname=026
 }
 C 45800 41700 1 0 0 coil_dc.sym
@@ -78,7 +78,7 @@ xref_master=1
 }
 N 46100 41700 46100 41300 4
 {
-T 44700 41350 5 4 1 1 0 0 1
+T 46050 41500 5 4 1 1 90 0 1
 netname=025
 }
 N 46100 45100 47000 45100 4
@@ -99,28 +99,28 @@ netname=024
 C 42700 45500 1 0 0 push_auto_ret_no.sym
 {
 T 43050 45575 5 8 1 1 0 0 1
-refdes=S2
+refdes=S4
 T 43100 46000 5 8 1 1 0 0 1
 description=Höger höj
 }
 C 43700 45500 1 0 0 push_auto_ret_no.sym
 {
 T 44050 45575 5 8 1 1 0 0 1
-refdes=S5
+refdes=S6
 T 44100 46000 5 8 1 1 0 0 1
 description=Vänster höj
 }
 C 45800 45500 1 0 0 push_auto_ret_no.sym
 {
 T 46150 45575 5 8 1 1 0 0 1
-refdes=S3
+refdes=S5
 T 46200 46000 5 8 1 1 0 0 1
 description=Höger sänk
 }
 C 46700 45500 1 0 0 push_auto_ret_no.sym
 {
 T 47050 45575 5 8 1 1 0 0 1
-refdes=S6
+refdes=S7
 T 47050 45450 5 8 0 1 0 0 1
 description=Vänster sänk
 T 47100 46000 5 8 1 1 0 0 1
