@@ -18,6 +18,7 @@
 (component-library (build-path gedasymbols "sek_inductors"))
 (component-library (build-path gedasymbols "sek_manual_switches"))
 (component-library (build-path gedasymbols "sek_power_supply"))
+(component-library (build-path gedasymbols "sek_radiators"))
 (component-library (build-path gedasymbols "titleblocks"))
 (component-library (build-path gedasymbols "xref"))
 
