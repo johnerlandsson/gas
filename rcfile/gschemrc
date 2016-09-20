@@ -13,6 +13,7 @@
 (component-library (build-path gedasymbols "counters"))
 (component-library (build-path gedasymbols "electronics"))
 (component-library (build-path gedasymbols "motor_drives"))
+(component-library (build-path gedasymbols "safety"))
 (component-library (build-path gedasymbols "sek_electromechanical"))
 (component-library (build-path gedasymbols "sek_fuses"))
 (component-library (build-path gedasymbols "sek_inductors"))
